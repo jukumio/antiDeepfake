@@ -1,0 +1,32 @@
+name: faceswap
+channels:
+  - conda-forge
+  - apple
+  - pytorch
+  - defaults
+
+dependencies:
+  - python=3.8
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - scikit-learn
+  - scikit-image
+  - opencv
+  - ffmpeg
+  - pillow
+  - protobuf
+  - pip
+  - pip:
+      - easydict
+      - insightface
+      - tqdm
+      - onnx
+      - onnxruntime
+      - paddlepaddle
+      - imageio
+      - coloredlogs
+      - humanfriendly
+      - tensorflow-macos
+      - tensorflow-metal

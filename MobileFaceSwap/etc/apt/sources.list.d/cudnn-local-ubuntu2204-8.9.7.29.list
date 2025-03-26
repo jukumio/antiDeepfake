@@ -1,0 +1,1 @@
+deb [signed-by=/usr/share/keyrings/cudnn-local-08A7D361-keyring.gpg] file:///var/cudnn-local-repo-ubuntu2204-8.9.7.29 /

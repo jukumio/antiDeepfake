@@ -1,0 +1,28 @@
+name: stargan
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10  # Updated from 3.7 since it's no longer supported
+  - pytorch  # Removed specific version to allow conda to resolve compatible version
+  - cudatoolkit  # Updated to a stable, widely available version
+  - numpy
+  - scipy
+  - opencv
+  - pytorch-lightning
+  - tensorflow
+  - scikit-learn
+  - tqdm
+  - matplotlib
+  - seaborn
+  - xgboost
+  - zlib
+  - libpng
+  - openssl
+  - cryptography
+  - grpcio
+  - pip
+  - pip:
+    - opencv-contrib-python  # Moved to pip install as it's not available in conda
