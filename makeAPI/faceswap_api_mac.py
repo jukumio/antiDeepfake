@@ -26,10 +26,10 @@ def load_models():
 @app.route('/swap', methods=['POST'])
 def swap_faces():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    print(f"🚀 BASE_DIR 확인: {BASE_DIR}")
+    print(f"BASE_DIR 확인: {BASE_DIR}")
 
     CHECKPOINTS_DIR = os.path.join(BASE_DIR, '../MobileFaceSwap/checkpoints')
-    print(f"🔍 CHECKPOINTS_DIR 확인: {CHECKPOINTS_DIR}")
+    print(f"CHECKPOINTS_DIR 확인: {CHECKPOINTS_DIR}")
 
     source_path = os.path.join(BASE_DIR, 'temp_source.jpg')
     target_path = os.path.join(BASE_DIR, 'temp_target.jpg')
@@ -37,10 +37,10 @@ def swap_faces():
     request.files['source'].save(source_path)
     request.files['target'].save(target_path)
 
-    # 🚀 저장된 파일 확인
+    # 저장된 파일 확인
     if not os.path.exists(source_path) or not os.path.exists(target_path):
         return jsonify({'error': 'Uploaded images not found'}), 500
-    print(f"✅ Uploaded images exist: {source_path}, {target_path}")
+    print(f"Uploaded images exist: {source_path}, {target_path}")
 
     # 기존 mac_image_test.py 실행
     command = [
@@ -50,14 +50,14 @@ def swap_faces():
         '--output_dir', os.path.abspath(BASE_DIR)
     ]
 
-    print(f"🚀 실행되는 명령어: {' '.join(command)}")
+    print(f"실행되는 명령어: {' '.join(command)}")
 
     
     try:
         result = subprocess.run(command, check=True, cwd=BASE_DIR, capture_output=True, text=True)
-        print(f"✅ mac_image_test.py 실행 결과:\n{result.stdout}")
+        print(f"mac_image_test.py 실행 결과:\n{result.stdout}")
     except subprocess.CalledProcessError as e:
-        print(f"❌ mac_image_test.py 실행 실패:\n{e.stderr}")
+        print(f"mac_image_test.py 실행 실패:\n{e.stderr}")
         return jsonify({'error': 'Image transformation failed', 'details': e.stderr}), 500
 
     result_path = os.path.join(BASE_DIR, 'temp_target.jpg')  # API가 반환할 이미지
@@ -65,7 +65,7 @@ def swap_faces():
     if not os.path.exists(result_path):
         return jsonify({'error': 'Output image not found'}), 500
 
-    # 🚀 파일을 메모리로 읽어서 반환 (파일 깨짐 방지)
+    # 파일을 메모리로 읽어서 반환 (파일 깨짐 방지)
     with open(result_path, "rb") as img_file:
         img_io = BytesIO(img_file.read())
 
