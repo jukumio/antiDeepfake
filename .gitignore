@@ -17,3 +17,4 @@ reslt/*
 stylegan2-ada-pytorch/ffhq/*
 stylegan2-ada-pytorch/ffhq2/*
 stylegan2-ada-pytorch/out/*
+results/*
