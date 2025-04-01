@@ -1,0 +1,35 @@
+name: CYBORG_MAC
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - numpy=1.23.5
+  - pip
+  - pytorch=1.12.0  # CPU 버전
+  - torchaudio=0.12.0  # Mac에서는 CPU 버전이 자동으로 설치됨
+  - torchvision=0.13.0
+  - accelerate  # Mac에서 PyTorch 최적화 지원
+  - pillow
+  - requests
+  - tqdm
+  - typing_extensions
+  - certifi
+  - setuptools
+  - wheel
+  - llvm-openmp  # Mac의 OpenMP 지원
+  - ffmpeg
+  - freetype
+  - libpng
+  - openjpeg
+  - xz
+  - zlib
+  - zstd
+  - pip:
+      - charset-normalizer
+      - cryptography
+      - idna
+      - pyopenssl
+      - pysocks
+      - urllib3
