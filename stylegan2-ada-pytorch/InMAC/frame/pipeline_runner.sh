@@ -25,7 +25,6 @@ for SEED in "${SEED_LIST[@]}"; do
         --use-mps
 done
 
-
 # ----------- 2단계: 가장 가까운 w 찾기 -----------
 echo "[Step 2] Finding closest W..."
 python "${PYTHON_SCRIPT_DIR}/find_closest_w.py" \
@@ -35,15 +34,25 @@ python "${PYTHON_SCRIPT_DIR}/find_closest_w.py" \
     --outpath "$OUTROOT/closest_w.npz" \
     --use_mps
 
+# ----------- 2.5단계: 선택된 w 다시 projector로 refinement -----------
+echo "[Step 2.5] Refining selected W..."
+python "${PYTHON_SCRIPT_DIR}/refine.py" \
+    --network "$NETWORK_PKL" \
+    --target "$TARGET_IMG" \
+    --outdir "$OUTROOT/refined" \
+    --w-init "$OUTROOT/closest_w.npz" \
+    --num-steps 300 \
+    --save-video true \
+    --use-mps
+
 # ----------- 3단계: FGSM 공격 후 생성 -----------
 echo "[Step 3] Generating image with FGSM..."
 python "${PYTHON_SCRIPT_DIR}/generate_fgsm.py" \
     --network "$NETWORK_PKL" \
-    --w "$OUTROOT/closest_w.npz" \
+    --w "$OUTROOT/refined/refined_w.npz" \
     --target "$TARGET_IMG" \
     --outdir "$OUTROOT" \
     --epsilon 0.05 \
     --use-mps
-
 # --------- 4단계: 결과 저장 -----------
 echo "Output saved in $OUTROOT"
