@@ -39,11 +39,16 @@ echo "[Step 2.5] Refining selected W..."
 python "${PYTHON_SCRIPT_DIR}/refine.py" \
     --network "$NETWORK_PKL" \
     --target "$TARGET_IMG" \
-    --outdir "$OUTROOT/refined" \
     --w-init "$OUTROOT/closest_w.npz" \
-    --num-steps 300 \
-    --save-video true \
-    --use-mps
+    --outdir "$OUTROOT/refined" \
+    --num-steps 200 \
+    --initial-lr 0.008 \
+    --betas 0.85 0.98 \
+    --lpips-weight 0.6 \
+    --reg-noise-weight 20000 \
+    --noise-mode random \
+    --use-mps \
+    --save-video
 
 # ----------- 3단계: FGSM 공격 후 생성 -----------
 echo "[Step 3] Generating image with FGSM..."
