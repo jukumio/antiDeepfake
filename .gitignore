@@ -12,16 +12,13 @@ mysource/*
 #model checkpoint
 disrupting-deepfakes/stargan/stargan_celeba_256/*
 MobileFaceSwap/checkpoints.tar
-stylegan/pretrained/*
-stylegan/weights/*
+stylegan2-ada-pytorch/pretrained/*
+stylegan2-ada-pytorch/weights/*
 stylegan/mobilenet.pt
 CYBORG/xception/model/*
 
 #results
 MobileFaceSwap/results/*
 reslt/*
-stylegan2-ada-pytorch/ffhq/*
-stylegan2-ada-pytorch/ffhq2/*
-stylegan2-ada-pytorch/out/*
 results/*
 CYBORG/local_results/*
