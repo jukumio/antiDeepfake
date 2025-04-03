@@ -4,7 +4,7 @@
 NETWORK_PKL="/Users/juheon/Desktop/DE_FAKE/capstone/stylegan2-ada-pytorch/weights/ffhq.pkl"
 TARGET_IMG="/Users/juheon/Desktop/DE_FAKE/capstone/mysource/smith.jpg"
 OUTROOT="/Users/juheon/Desktop/DE_FAKE/capstone/results"
-STEPS=500
+STEPS=400
 PYTHON_SCRIPT_DIR="/Users/juheon/Desktop/DE_FAKE/capstone/stylegan2-ada-pytorch/InMAC/frame"
 export PYTHONPATH="/Users/juheon/Desktop/DE_FAKE/capstone/stylegan2-ada-pytorch"
 mkdir -p "$OUTROOT/w_candidates"

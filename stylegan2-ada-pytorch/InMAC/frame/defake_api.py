@@ -1,48 +1,106 @@
-from fastapi import FastAPI, File, UploadFile
+
+'''
+실행 방법
+uvicorn InMAC.frame.defake_api:app --reload --host 0.0.0.0 --port 8000
+'''
+
+from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import FileResponse, JSONResponse
 import os
 import subprocess
-import shutil
 import uuid
 
 app = FastAPI()
 
 @app.post("/defake")
-async def defake_image(target: UploadFile = File(...)):
+async def defake_image(
+    target: UploadFile = File(...),
+    network_pkl: str = Form(...),
+    outroot: str = Form(...),
+    steps: int = Form(default=400),
+    python_script_dir: str = Form(...),
+    work_dir: str = Form(...)
+):
     session_id = str(uuid.uuid4())[:8]
-    base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # 작업 디렉토리
-    work_dir = os.path.join(base_dir, "workspace", session_id)
-    os.makedirs(work_dir, exist_ok=True)
+    # 작업 디렉토리 설정
+    session_outroot = os.path.join(outroot, session_id)
+    w_candidates_dir = os.path.join(session_outroot, "w_candidates")
+    os.makedirs(w_candidates_dir, exist_ok=True)
 
-    target_path = os.path.join(work_dir, "target.jpg")
+    # 업로드된 타겟 이미지 저장
+    target_path = os.path.join(work_dir, f"target_{session_id}.jpg")
     with open(target_path, "wb") as f:
         f.write(await target.read())
 
-    # 네트워크 파일
-    network_pkl = os.path.join(base_dir, "weights", "ffhq.pkl")
     if not os.path.exists(network_pkl):
-        return JSONResponse(status_code=500, content={"error": "ffhq.pkl not found"})
+        return JSONResponse(status_code=500, content={"error": "network_pkl not found"})
 
-    # 쉘 스크립트 경로
-    script_path = os.path.join(base_dir, "run_defake_pipeline.sh")
+    # PYTHONPATH 설정
+    env = os.environ.copy()
+    env["PYTHONPATH"] = work_dir
 
-    # 실행
     try:
-        subprocess.run(
-            ["bash", script_path, network_pkl, target_path, work_dir],
-            check=True,
-            capture_output=True,
-            text=True
-        )
+        # Step 1: 여러 W 생성
+        seeds = subprocess.check_output(["shuf", "-i", "0-10000", "-n", "5"]).decode().split()
+        for seed in seeds:
+            subprocess.run([
+                "python", f"{python_script_dir}/projector_mps_W.py",
+                "--network", network_pkl,
+                "--target", target_path,
+                "--outdir", f"{w_candidates_dir}/seed{seed}",
+                "--seed", seed,
+                "--save-video", "false",
+                "--num-steps", str(steps),
+                "--use-mps"
+            ], check=True, env=env)
+
+        # Step 2: 가장 가까운 W 찾기
+        closest_w_path = os.path.join(session_outroot, "closest_w.npz")
+        subprocess.run([
+            "python", f"{python_script_dir}/find_closest_w.py",
+            "--target", target_path,
+            "--w_candidates", w_candidates_dir,
+            "--network", network_pkl,
+            "--outpath", closest_w_path,
+            "--use-mps"
+        ], check=True, env=env)
+
+        # Step 2.5: W refinement
+        refined_dir = os.path.join(session_outroot, "refined")
+        subprocess.run([
+            "python", f"{python_script_dir}/refine.py",
+            "--network", network_pkl,
+            "--target", target_path,
+            "--w-init", closest_w_path,
+            "--outdir", refined_dir,
+            "--num-steps", "200",
+            "--initial-lr", "0.008",
+            "--betas", "0.85", "0.98",
+            "--lpips-weight", "0.6",
+            "--reg-noise-weight", "20000",
+            "--noise-mode", "random",
+            "--use-mps",
+            "--save-video"
+        ], check=True, env=env)
+
+        # Step 3: FGSM 공격 후 이미지 생성
+        subprocess.run([
+            "python", f"{python_script_dir}/generate_fgsm.py",
+            "--network", network_pkl,
+            "--w", f"{refined_dir}/refined_w.npz",
+            "--target", target_path,
+            "--outdir", session_outroot,
+            "--epsilon", "0.05",
+            "--use-mps"
+        ], check=True, env=env)
+
     except subprocess.CalledProcessError as e:
         return JSONResponse(status_code=500, content={"error": e.stderr})
 
-    # 최종 이미지 경로
-    fgsm_path = os.path.join(work_dir, "fgsm_proj.png")
+    # 결과 이미지 반환
+    fgsm_path = os.path.join(session_outroot, "fgsm_proj.png")
     if not os.path.exists(fgsm_path):
-        return JSONResponse(status_code=500, content={"error": "fgsm output not found"})
+        return JSONResponse(status_code=500, content={"error": "FGSM output not found"})
 
     return FileResponse(fgsm_path, media_type="image/png")
-
