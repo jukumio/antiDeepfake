@@ -14,7 +14,6 @@ disrupting-deepfakes/stargan/stargan_celeba_256/*
 MobileFaceSwap/checkpoints.tar
 stylegan2-ada-pytorch/pretrained/*
 stylegan2-ada-pytorch/weights/*
-stylegan/mobilenet.pt
 CYBORG/xception/model/*
 
 #results
@@ -22,3 +21,4 @@ MobileFaceSwap/results/*
 reslt/*
 results/*
 CYBORG/local_results/*
+stylegan2-ada-pytorch/target_*.jpg

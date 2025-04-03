@@ -63,7 +63,7 @@ async def defake_image(
             "--w_candidates", w_candidates_dir,
             "--network", network_pkl,
             "--outpath", closest_w_path,
-            "--use-mps"
+            "--use_mps"
         ], check=True, env=env)
 
         # Step 2.5: W refinement

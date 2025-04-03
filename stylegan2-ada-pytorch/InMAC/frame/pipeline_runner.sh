@@ -2,7 +2,7 @@
 
 # ----------- 사용자 설정 -----------
 NETWORK_PKL="/Users/juheon/Desktop/DE_FAKE/capstone/stylegan2-ada-pytorch/weights/ffhq.pkl"
-TARGET_IMG="/Users/juheon/Desktop/DE_FAKE/capstone/mysource/smith.jpg"
+TARGET_IMG="/Users/juheon/Desktop/DE_FAKE/capstone/mysource/ju_te.jpeg"
 OUTROOT="/Users/juheon/Desktop/DE_FAKE/capstone/results"
 STEPS=400
 PYTHON_SCRIPT_DIR="/Users/juheon/Desktop/DE_FAKE/capstone/stylegan2-ada-pytorch/InMAC/frame"
@@ -59,5 +59,6 @@ python "${PYTHON_SCRIPT_DIR}/generate_fgsm.py" \
     --outdir "$OUTROOT" \
     --epsilon 0.05 \
     --use-mps
+
 # --------- 4단계: 결과 저장 -----------
 echo "Output saved in $OUTROOT"

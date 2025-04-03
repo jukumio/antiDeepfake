@@ -16,7 +16,7 @@ response = requests.post(
 )
 
 if response.status_code == 200:
-    with open("/Users/juheon/Desktop/DE_FAKE/capstone/stylegan2-ada-pytorch/results/result.png", "wb") as f:
+    with open("/Users/juheon/Desktop/DE_FAKE/capstone/stylegan2-ada-pytorch/results/fgsm_proj.png", "wb") as f:
         f.write(response.content)
     print("이미지 저장 성공")
 else:
