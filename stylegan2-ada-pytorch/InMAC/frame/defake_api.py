@@ -18,7 +18,7 @@ async def defake_image(
     network_pkl: str = Form(...),
     outroot: str = Form(...),
     steps: int = Form(default=400),
-    python_script_dir: str = Form(...),
+    python_script_dir: str = Form(...), #상대경로
     work_dir: str = Form(...)
 ):
     session_id = str(uuid.uuid4())[:8]
@@ -103,4 +103,5 @@ async def defake_image(
     if not os.path.exists(fgsm_path):
         return JSONResponse(status_code=500, content={"error": "FGSM output not found"})
 
-    return FileResponse(fgsm_path, media_type="image/png")
+    return JSONResponse(content={"fgsm_path": fgsm_path})
+    # path를 리턴해줌
