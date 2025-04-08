@@ -42,7 +42,7 @@ async def defake_image(
 
     try:
         # Step 1: 여러 W 생성
-        seeds = subprocess.check_output(["shuf", "-i", "0-10000", "-n", "5"]).decode().split()
+        seeds = subprocess.check_output(["shuf", "-i", "0-10000", "-n", "3"]).decode().split()
         for seed in seeds:
             subprocess.run([
                 "python", f"{python_script_dir}/projector_mps_W.py",

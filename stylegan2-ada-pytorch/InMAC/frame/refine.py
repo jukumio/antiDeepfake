@@ -91,26 +91,54 @@ def project(G, target, *, device, num_steps=500, w_init=None, initial_lr=0.05, b
 @click.option('--outdir', required=True, help='Output directory')
 @click.option('--use-mps', is_flag=True, help='Use MPS backend')
 @click.option('--save-video', is_flag=True, default=False, help='Save refinement video')
+
+
 def run_refine(network, target, w_init, num_steps, initial_lr, betas, lpips_weight, reg_noise_weight, noise_mode, outdir, use_mps, save_video):
     device = torch.device('mps') if use_mps and torch.backends.mps.is_available() else torch.device('cpu')
 
     with dnnlib.util.open_url(network) as f:
         G = legacy.load_network_pkl(f)['G_ema'].eval().to(device)
 
-    target_pil = PIL.Image.open(target).convert('RGB').resize((G.img_resolution, G.img_resolution), PIL.Image.LANCZOS)
-    target_tensor = torch.tensor(np.array(target_pil).transpose(2,0,1), dtype=torch.float32, device=device)
+    os.makedirs(outdir, exist_ok=True)
 
+    # Load target image
+    target_pil = PIL.Image.open(target).convert('RGB').resize((G.img_resolution, G.img_resolution), PIL.Image.LANCZOS)
+    target_tensor = torch.tensor(np.array(target_pil).transpose(2, 0, 1), dtype=torch.float32, device=device)
+    target_uint8 = np.array(target_pil, dtype=np.uint8)
+    target_bgr = cv2.cvtColor(target_uint8, cv2.COLOR_RGB2BGR)
+
+    # Load initial w
     w_tensor = torch.tensor(np.load(w_init)['w'], dtype=torch.float32, device=device)
 
+    # Run refinement
     projected_w_steps = project(
         G, target_tensor, device=device, num_steps=num_steps, w_init=w_tensor,
         initial_lr=initial_lr, betas=betas, lpips_weight=lpips_weight,
         reg_noise_weight=reg_noise_weight, noise_mode=noise_mode, verbose=True
     )
 
-    os.makedirs(outdir, exist_ok=True)
+    # Save refined w
     final_w = projected_w_steps[-1]
     np.savez(os.path.join(outdir, 'refined_w.npz'), w=final_w.unsqueeze(0).cpu().numpy())
+
+    # Optionally save video
+    if save_video:
+        try:
+            frame_size = (G.img_resolution * 2, G.img_resolution)
+            video_path = os.path.join(outdir, 'refine.mp4')
+            video = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, frame_size)
+            print(f"Saving video: {video_path}")
+
+            for projected_w in projected_w_steps:
+                synth_image = G.synthesis(projected_w.unsqueeze(0), noise_mode=noise_mode)
+                synth_image = (synth_image + 1) * (255/2)
+                synth_image = synth_image.permute(0, 2, 3, 1).clamp(0, 255).to(torch.uint8)[0].cpu().numpy()
+                synth_bgr = cv2.cvtColor(synth_image, cv2.COLOR_RGB2BGR)
+                video.write(np.concatenate([target_bgr, synth_bgr], axis=1))
+
+            video.release()
+        except Exception as e:
+            print(f"[Warning] Failed to save refinement video: {e}")
 
 if __name__ == '__main__':
     run_refine()

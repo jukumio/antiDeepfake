@@ -10,8 +10,8 @@ export PYTHONPATH="/Users/juheon/Desktop/DE_FAKE/capstone/stylegan2-ada-pytorch"
 mkdir -p "$OUTROOT/w_candidates"
 
 # ----------- 1단계: 여러 w 생성 -----------
-# 랜덤하게 5개 seed 선택
-SEED_LIST=($(shuf -i 0-10000 -n 5))  
+# 랜덤하게 5개 seed 선택 --> 3개로 바꿔도 잘 됨
+SEED_LIST=($(shuf -i 0-10000 -n 3))  
 
 for SEED in "${SEED_LIST[@]}"; do
     echo "[Seed ${SEED}] Projecting..."
