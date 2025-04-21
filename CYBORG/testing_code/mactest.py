@@ -12,7 +12,7 @@ import argparse
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append('/Users/juheon/Desktop/DE_FAKE/capstone/CYBORG')
 from xception.network.models import model_selection
 
 if __name__ == '__main__':

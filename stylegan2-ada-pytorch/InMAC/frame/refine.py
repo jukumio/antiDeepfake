@@ -121,13 +121,14 @@ def run_refine(network, target, w_init, num_steps, initial_lr, betas, lpips_weig
     final_w = projected_w_steps[-1]
     np.savez(os.path.join(outdir, 'refined_w.npz'), w=final_w.unsqueeze(0).cpu().numpy())
 
-    # Optionally save video
+        # Optionally save video
     if save_video:
         try:
             frame_size = (G.img_resolution * 2, G.img_resolution)
-            video_path = os.path.join(outdir, 'refine.mp4')
-            video = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, frame_size)
-            print(f"Saving video: {video_path}")
+            raw_video_path = os.path.join(outdir, 'refine_raw.mp4')
+            final_video_path = os.path.join(outdir, 'refine.mp4')
+            video = cv2.VideoWriter(raw_video_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, frame_size)
+            print(f"Saving video (raw): {raw_video_path}")
 
             for projected_w in projected_w_steps:
                 synth_image = G.synthesis(projected_w.unsqueeze(0), noise_mode=noise_mode)
@@ -137,8 +138,22 @@ def run_refine(network, target, w_init, num_steps, initial_lr, betas, lpips_weig
                 video.write(np.concatenate([target_bgr, synth_bgr], axis=1))
 
             video.release()
+
+            # Re-encode using ffmpeg to H.264
+            print(f"Re-encoding video to H.264 for browser compatibility...")
+            import subprocess
+            subprocess.run([
+                "ffmpeg", "-y", "-i", raw_video_path,
+                "-vcodec", "libx264", "-pix_fmt", "yuv420p", "-acodec", "aac",
+                final_video_path
+            ], check=True)
+
+            # 삭제: 원본 raw mp4
+            os.remove(raw_video_path)
+
         except Exception as e:
-            print(f"[Warning] Failed to save refinement video: {e}")
+            print(f"[Warning] Failed to save or re-encode refinement video: {e}")
+
 
 if __name__ == '__main__':
     run_refine()

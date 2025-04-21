@@ -28,7 +28,7 @@ def image_test(args):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     CHECKPOINTS_DIR = os.path.join(BASE_DIR, 'checkpoints')
     
-    print("🚀 모델 로드 시작")
+    print("모델 로드 시작")
     landmarkModel = LandmarkModel(name=os.path.join(CHECKPOINTS_DIR, 'landmarks'))
     landmarkModel.prepare(ctx_id=0, det_thresh=0.6, det_size=(640,640))
     
@@ -56,20 +56,20 @@ def image_test(args):
         att_img = cv2.imread(base_path + '_aligned.png')
         
         if att_img is None:
-            raise ValueError(f"❌ 얼굴 정렬된 이미지가 로드되지 않음: {base_path + '_aligned.png'}")
+            raise ValueError(f"얼굴 정렬된 이미지가 로드되지 않음: {base_path + '_aligned.png'}")
 
         att_img = cv2paddle(att_img)
         
-        print("🚀 얼굴 변환 시작")
+        print("얼굴 변환 시작")
         try:
             res, mask = faceswap_model(att_img)
         except Exception as e:
-            raise RuntimeError(f"❌ faceswap_model 실패: {str(e)}")
+            raise RuntimeError(f"faceswap_model 실패: {str(e)}")
 
         res = paddle2cv(res)
 
         if res is None or res.shape[0] == 0:
-            raise ValueError("❌ 변환된 이미지가 None 또는 비어 있음!")
+            raise ValueError("변환된 이미지가 None 또는 비어 있음")
 
 
         if args.merge_result:
@@ -80,9 +80,9 @@ def image_test(args):
         output_file = os.path.join(args.output_dir, os.path.basename(img_path))
         success = cv2.imwrite(output_file, res)
         if not success:
-            print(f"❌ 이미지 저장 실패: {output_file}")
+            print(f"이미지 저장 실패: {output_file}")
 
-        print(f"✅ 변환 완료: {output_file}")
+        print(f"변환 완료: {output_file}")
 
 
 def face_align(landmarkModel, image_path, merge_result=False, image_size=224):

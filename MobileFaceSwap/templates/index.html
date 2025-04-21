@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Swap App</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🧑‍🤝‍🧑 얼굴 스왑 데모</h1>
+        <form action="/upload/" enctype="multipart/form-data" method="post">
+            <label for="source">Source 이미지 (변환할 얼굴):</label>
+            <input type="file" name="source_img" required><br>
+
+            <label for="target">Target 이미지 (합성할 이미지):</label>
+            <input type="file" name="target_img" required><br>
+
+            <button type="submit">얼굴 스왑 실행</button>
+        </form>
+
+        {% if result_image %}
+        <div class="result">
+            <h2>✅ 결과</h2>
+            <img src="{{ result_image }}" alt="Result Image">
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
