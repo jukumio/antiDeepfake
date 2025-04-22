@@ -1,28 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Face Swap App</title>
+    <title>Face Swap</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🧑‍🤝‍🧑 얼굴 스왑 데모</h1>
-        <form action="/upload/" enctype="multipart/form-data" method="post">
-            <label for="source">Source 이미지 (변환할 얼굴):</label>
-            <input type="file" name="source_img" required><br>
+        <h1>얼굴 스왑 데모</h1>
 
-            <label for="target">Target 이미지 (합성할 이미지):</label>
-            <input type="file" name="target_img" required><br>
+        <form action="/upload/" method="post" enctype="multipart/form-data">
+            <div class="input-section">
+                <label for="source_img">Source 이미지 (변환할 얼굴)</label><br>
+                <input type="file" id="source_img" name="source_img" accept="image/*" required>
+            </div>
+
+            <div class="input-section">
+                <label for="target_img">Target 이미지 (합성 대상)</label><br>
+                <input type="file" id="target_img" name="target_img" accept="image/*" required>
+            </div>
 
             <button type="submit">얼굴 스왑 실행</button>
         </form>
 
+        {% if source_image and target_image %}
+            <div class="preview">
+                <h2>입력 이미지</h2>
+                <div class="images">
+                    <div>
+                        <p>Source</p>
+                        <img src="{{ source_image }}" alt="Source Image" width="200">
+                        <a href="{{ source_image }}" download>다운로드</a>
+                    </div>
+                    <div>
+                        <p>Target</p>
+                        <img src="{{ target_image }}" alt="Target Image" width="200">
+                        <a href="{{ target_image }}" download>다운로드</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         {% if result_image %}
-        <div class="result">
-            <h2>✅ 결과</h2>
-            <img src="{{ result_image }}" alt="Result Image">
-        </div>
+            <div class="result">
+                <h2>결과 이미지</h2>
+                <img src="{{ result_image }}" alt="Result Image" width="400">
+                <br>
+                <a href="{{ result_image }}" download>결과 이미지 다운로드</a>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <p style="color: red;">⚠️ {{ error }}</p>
         {% endif %}
     </div>
 </body>

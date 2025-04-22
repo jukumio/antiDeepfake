@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: sans-serif;
     background: #f4f4f4;
     padding: 2rem;
     text-align: center;
@@ -9,15 +9,27 @@ body {
     background: white;
     padding: 2rem;
     border-radius: 10px;
-    display: inline-block;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    display: inline-block;
 }
 
-input {
-    margin: 10px;
+.input-section {
+    margin: 1rem 0;
 }
 
-.result img {
-    margin-top: 20px;
-    max-width: 400px;
+.preview .images {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+img {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+a {
+    display: block;
+    margin-top: 0.5rem;
 }
