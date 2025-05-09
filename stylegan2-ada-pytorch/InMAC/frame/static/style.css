@@ -1,0 +1,126 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    max-width: 800px;
+    min-height: 100vh;
+    margin: 0 auto;
+    background-color: white;
+    padding: 0px 15px;
+    box-shadow: 0px 0px 30px 0px rgba(100, 100, 111, 0.15);
+    border-radius: 12px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+h3 {
+    text-align: center;
+    color: #444;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.container {
+    background: transparent;
+    padding: 2rem 0;
+    border-radius: 10px;
+    box-shadow: none;
+    display: block;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.input-section {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: 0 auto 2rem auto;
+    gap: 15px;
+    background: #f8fafd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px 0 rgba(100,100,111,0.07);
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+}
+
+input[type="file"] {
+    padding: 10px 0;
+    border: none;
+    background: none;
+    font-size: 1rem;
+}
+
+.preview .images,
+.result-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    max-width: 800px;
+}
+
+.result-container img,
+.result-container video {
+    width: 256px;
+    height: auto;
+    margin-bottom: 10px;
+    display: block;
+    margin: 0 auto 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(100,100,111,0.10);
+    border: 1px solid #e0e0e0;
+    background: #fafbfc;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 10px auto;
+    display: block;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #0074d9;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .container {
+        max-width: 98vw;
+        padding: 0 2vw;
+    }
+    .input-section {
+        max-width: 98vw;
+        padding: 1rem 0.5rem;
+    }
+    .result-container {
+        gap: 1rem;
+    }
+}

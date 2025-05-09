@@ -20,23 +20,20 @@ curl -X POST "http://localhost:8000/swap" \
 이것도 하기 귀찮으면 post_swap.py 를 써서 해보도록 하자.
 
 # StyleGAN으로 얼굴 생성 테스트
-stylengan2-ada-pytorch 폴더 들어가서
+먼저 envs에 있는 macstyle.yml 파일을 conda로 설치한다. 
+추가적으로 fast api 관련 설정도 설치해야 웹 사이트 접속이 가능하다.
+
+환경 구성이 끝났다면 stylengan2-ada-pytorch/InMAC/frame 폴더 들어가서
 ```
-uvicorn InMAC.frame.defake_api:app --reload --host 0.0.0.0 --port 8000
+python stylegan_app.py
 ```
-
-실행하면 fastapi로 변환해둔 실행기가 켜진다. 중요한 점은 ffhq.pkl이라는 모델을 저장해둔 파일이 없으면 안되는데,
-
-```
-python projector.py --outdir=out --target=~/mytargetimg.png \
---network=https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/ffhq.pkl
-```
-이걸 실행하거나 링크 들어가서 다운받도록 하자.
-
-그 다음으로 터미널을 하나 더 열어서 post_req 파일을 실행하면 된다. 여기서 파라미터에 본인 위치를 잘 입력하도록 하자.
+를 실행하면 로컬 호스트로 접속이 가능해진다. 그리고 원하는 이미지를 넣으면 파이프라인이 작동한다.
 
 
-굳이 api로 안해도 된다 그러면 pipeline_runner라는 bash 파일을 열어서 여기다 파라미터 넣고 하면 된다. 개인적으로 이게 더 편하다.
+난 시연 시에 ngrox를 통해 일시적으로 로컬 호스트를 웹으로 띄웠다.
+
+아니면 pipeline_runner라는 bash 파일을 열어서 파라미터를 알맞게 설정해 실행할 수도 있다. 
+개인적으로 이게 더 편하다.
 
 ```
 bash pipeline_runner.sh
@@ -57,5 +54,5 @@ StyleGAN은 이름 그대로 기존 이미지에 수염을 달거나, 남자로 
 
 난 여기서 아이디어를 얻어 1차적으로 latent space를 구축하고, 그걸 바탕으로 필터를 씌운 새로운
 이미지로 재탄생시키기로 했다.
-pipeline 속 projector는 랜덤 5개 시드로부터 가중치 w를 구하고, 그 중 가장 근접한 w값을 구해
-새롭게 generate 시키면서 동시에 fgsm 필터를 씌우는 것이다.
+pipeline 속 projector는 랜덤 3개 시드로부터 Latent space W를 구하고, 그 중 LPIPS 거리가 
+가장 짧은 이미지를 생성한 projector의 W를 가져와 새롭게 이미지를 생성함과 동시에 FGSM 필터를 씌운다.

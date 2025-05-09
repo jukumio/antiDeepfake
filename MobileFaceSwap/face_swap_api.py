@@ -132,3 +132,8 @@ async def upload(request: Request, source_img: UploadFile = File(...), target_im
             "result_image": None,
             "error": f"에러 발생: {str(e)}"
         })
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8081)

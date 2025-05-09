@@ -10,16 +10,15 @@ from fastapi.responses import RedirectResponse
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, "data/stylegan/input")
 RESULT_DIR = os.path.join(BASE_DIR, "data/stylegan/results")
+STYLE_DIR = os.path.join(BASE_DIR, "static")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(RESULT_DIR, exist_ok=True)
 
 app = FastAPI()
 templates = Jinja2Templates(directory="pages")
-app.mount("/static", StaticFiles(directory=RESULT_DIR), name="static")  # result 이미지 제공
-
-@app.get("/favicon.ico")
-async def favicon():
-    return RedirectResponse(url="/static/default-favicon.ico")  # 없으면 무시해도 OK
+app.mount("/data/stylegan/results", StaticFiles(directory=RESULT_DIR), name="static")  # result 이미지 제공
+app.mount("/static", StaticFiles(directory=STYLE_DIR), name="static")  # 스타일 시트 제공
+app.mount("/data/stylegan/input", StaticFiles(directory=UPLOAD_DIR), name="input_files")  # 원본 이미지 제공
 
 @app.get("/")
 async def redirect_to_stylegan():
@@ -35,6 +34,7 @@ async def stylegan_run(request: Request, file: UploadFile = File(...)):
     filename = f"{timestamp}_{file.filename}"
     upload_path = os.path.join(UPLOAD_DIR, filename)
 
+    # 파일 저장
     with open(upload_path, "wb") as f:
         f.write(await file.read())
 
@@ -56,13 +56,6 @@ async def stylegan_run(request: Request, file: UploadFile = File(...)):
         log_file.write("\n\n=== STDERR ===\n")
         log_file.write(process.stderr)
 
-    # 콘솔 출력
-    print("=== STDOUT ===\n", process.stdout)
-    print("=== STDERR ===\n", process.stderr)
-
-    if process.returncode != 0:
-        return HTMLResponse(content=f"<h2>실행 중 오류 발생:</h2><pre>{process.stderr}</pre>", status_code=500)
-
     # 결과 이미지 및 비디오 경로 확인
     result_img_path = os.path.join(result_dir_for_this_run, "fgsm_proj.png")
     video_path = os.path.join(result_dir_for_this_run, "refined", "refine.mp4")
@@ -71,17 +64,18 @@ async def stylegan_run(request: Request, file: UploadFile = File(...)):
         return HTMLResponse(content=f"<h2>결과 이미지가 생성되지 않았습니다.</h2>", status_code=500)
 
     # 경로 URL로 변환
-    result_url = f"/static/run_{timestamp}/fgsm_proj.png"
+    result_url = f"/data/stylegan/results/run_{timestamp}/fgsm_proj.png"
     video_url = None
     if os.path.exists(video_path):
-        video_url = f"/static/run_{timestamp}/refined/refine.mp4"
+        video_url = f"/data/stylegan/results/run_{timestamp}/refined/refine.mp4"
 
+    # 업로드된 파일명 템플릿에 전달
     return templates.TemplateResponse("stylegan.html", {
         "request": request,
         "result": result_url,
-        "video": video_url
+        "video": video_url,
+        "uploaded_filename": filename  # 업로드된 파일명 전달
     })
-
 
 
 if __name__ == "__main__":

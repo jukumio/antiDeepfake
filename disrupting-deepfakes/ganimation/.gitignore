@@ -1,6 +1,0 @@
-data/*
-experiments/*
-__pycache__
-.vscode
-animations/eric_andre/pretrained_models/*
-animations/eric_andre/results/*

@@ -2,26 +2,40 @@
 <html>
 <head>
   <title>StyleGAN Generator</title>
+  <link rel="stylesheet" type="text/css" href="/static/style.css">
 </head>
 <body>
-  <h1>Upload an Image</h1>
-  <form action="/stylegan" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <button type="submit">Run StyleGAN</button>
-  </form>
+  <h1>StyleGAN 변환기</h1>
 
-  {% if result %}
-    <h3>결과 이미지</h3>
-    <img src="{{ result }}" width="512">
-  {% endif %}
+  <div class="container">
+    <form action="/stylegan" method="post" enctype="multipart/form-data" class="input-section">
+      <input type="file" name="file" required>
+      <button type="submit">Run StyleGAN</button>
+    </form>
 
-  {% if video %}
-    <h3>Refinement Video</h3>
-    <video controls width="512">
-      <source src="{{ video }}" type="video/mp4">
-      브라우저가 비디오를 지원하지 않습니다.
-    </video>
-  {% endif %}
+    {% if result %}
+      <div class="result-container">
+        <div>
+          <h3>원본 이미지</h3>
+          <img src="{{ '/data/stylegan/input/' + uploaded_filename }}" alt="Original Image">
+        </div>
+        <div>
+          <h3>변환된 이미지</h3>
+          <img src="{{ result }}" alt="Generated Image">
+          <a href="{{ result }}" download>이미지 다운로드</a>
+        </div>
+      </div>
+    {% endif %}
 
+    {% if video %}
+      <h3>Refinement Video</h3>
+      <div class="result-container">
+        <video controls>
+          <source src="{{ video }}" type="video/mp4">
+          브라우저가 비디오를 지원하지 않습니다.
+        </video>
+      </div>
+    {% endif %}
+  </div>
 </body>
 </html>
