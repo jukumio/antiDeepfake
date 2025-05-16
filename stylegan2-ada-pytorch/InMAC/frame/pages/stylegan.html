@@ -3,6 +3,19 @@
 <head>
   <title>StyleGAN Generator</title>
   <link rel="stylesheet" type="text/css" href="/static/style.css">
+  <style>
+    #progress-log {
+      white-space: pre-wrap;
+      background-color: #f7f7f7;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
   <h1>StyleGAN 변환기</h1>
@@ -13,15 +26,26 @@
       <button type="submit">Run StyleGAN</button>
     </form>
 
+    {% if message %}
+      <p style="color: green;">{{ message }}</p>
+
+      {% if result_url %}
+        <p>→ <a href="{{ result_url }}" target="_blank">결과 페이지 열기</a></p>
+        <input type="hidden" id="session-id" value="{{ session_id }}">
+        <p id="progress-status">진행 상태 확인 중...</p>
+        <div id="progress-log">로그 로딩 중...</div>
+      {% endif %}
+    {% endif %}
+
     {% if result %}
       <div class="result-container">
         <div>
           <h3>원본 이미지</h3>
-          <img src="{{ '/data/stylegan/input/' + uploaded_filename }}" alt="Original Image">
+          <img src="{{ '/data/stylegan/' + uploaded_filename }}" alt="Original Image" style="max-width: 400px;">
         </div>
         <div>
           <h3>변환된 이미지</h3>
-          <img src="{{ result }}" alt="Generated Image">
+          <img src="{{ result }}" alt="Generated Image" style="max-width: 400px;">
           <a href="{{ result }}" download>이미지 다운로드</a>
         </div>
       </div>
@@ -30,12 +54,41 @@
     {% if video %}
       <h3>Refinement Video</h3>
       <div class="result-container">
-        <video controls>
+        <video controls style="max-width: 600px;">
           <source src="{{ video }}" type="video/mp4">
           브라우저가 비디오를 지원하지 않습니다.
         </video>
       </div>
     {% endif %}
   </div>
+
+  <script>
+    function startPolling(sessionId) {
+      const statusText = document.getElementById("progress-status");
+      const logDiv = document.getElementById("progress-log");
+
+      const interval = setInterval(() => {
+        fetch(`/progress/${sessionId}`)
+          .then(response => response.json())
+          .then(data => {
+            statusText.innerText = "진행 상태: " + data.status;
+            logDiv.innerText = data.log;
+
+            if (data.status.includes("최종") || data.status.includes("완료")) {
+              clearInterval(interval);
+              window.location.href = `/result/${sessionId}`;
+            }
+          });
+      }, 5000);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const sessionIdElem = document.getElementById("session-id");
+      if (sessionIdElem) {
+        const sessionId = sessionIdElem.value;
+        startPolling(sessionId);
+      }
+    });
+  </script>
 </body>
 </html>
