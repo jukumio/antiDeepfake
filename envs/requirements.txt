@@ -1,0 +1,17 @@
+# for stylegan2-ada-pytorch
+# pip install -r requirements.txt
+numpy
+scipy
+pillow
+tqdm
+click
+imageio
+fastapi
+python-multipart
+uvicorn
+
+# PyTorch (CUDA 11.8)
+torch==2.0.1+cu118
+torchvision==0.15.2+cu118
+torchaudio==2.0.2+cu118
+--extra-index-url https://download.pytorch.org/whl/cu118
