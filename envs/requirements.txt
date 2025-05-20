@@ -9,9 +9,13 @@ imageio
 fastapi
 python-multipart
 uvicorn
+opencv
 
 # PyTorch (CUDA 11.8)
 torch==2.0.1+cu118
 torchvision==0.15.2+cu118
 torchaudio==2.0.2+cu118
 --extra-index-url https://download.pytorch.org/whl/cu118
+
+# weights - ffhq.pkl
+# wget https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada/pretrained/ffhq.pkl

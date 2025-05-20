@@ -20,14 +20,21 @@ curl -X POST "http://localhost:8000/swap" \
 이것도 하기 귀찮으면 post_swap.py 를 써서 해보도록 하자.
 
 # StyleGAN으로 얼굴 생성 테스트
-먼저 envs에 있는 macstyle.yml 파일을 conda로 설치한다. 
-추가적으로 fast api 관련 설정도 설치해야 웹 사이트 접속이 가능하다.
+
+먼저 envs에 있는 requirements.txt 파일을 설치한다. 
+추가적으로 fast api 관련 설정(fastapi, python-multipart, uvicorn)도 
+설치해야 웹 사이트 접속이 가능하다.
 
 환경 구성이 끝났다면 stylengan2-ada-pytorch/InMAC/frame 폴더 들어가서
 ```
 python stylegan_app.py
 ```
 를 실행하면 로컬 호스트로 접속이 가능해진다. 그리고 원하는 이미지를 넣으면 파이프라인이 작동한다.
+
+!!! 중요! InMAC/frame 폴더 내에 weights 폴더를 만든 뒤, 
+https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada/pretrained/ffhq.pkl
+또는, https://github.com/NVlabs/stylegan2-ada/?tab=readme-ov-file
+해당 페이지에 pretrained 부분에서 ffhq.pkl을 다운받아 weights 폴더로 이동해야 한다!
 
 
 난 시연 시에 ngrox를 통해 일시적으로 로컬 호스트를 웹으로 띄웠다.
